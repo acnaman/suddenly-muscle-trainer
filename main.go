@@ -8,56 +8,12 @@ import (
 	"github.com/skratchdot/open-golang/open"
 )
 
-//var logger service.Logger
-
 const percent int = 5
 const blankMinute = 10
 
 type program struct{}
 
-/*func (p *program) Start(s service.Service) error {
-	// Start should not block. Do the actual work async.
-	go p.run()
-	return nil
-}
-func (p *program) run() {
-	t := time.NewTicker(3 * time.Second)
-	for {
-		select {
-		case <-t.C:
-			if !isLucky() {
-				fmt.Println("Unlucky...")
-				break
-			}
-			openVideo()
-		}
-	}
-}
-func (p *program) Stop(s service.Service) error {
-	// Stop should not block. Return with a few seconds.
-	return nil
-}*/
-
 func main() {
-	/*	svcConfig := &service.Config{
-			DisplayName: "Muscle Training Time!!!",
-			Description: "Sudeenly Muscle Training service.",
-			Name:        "SuddenlyMuscleTraining",
-		}
-
-		prg := &program{}
-		s, err := service.New(prg, svcConfig)
-		if err != nil {
-			log.Fatal(err)
-		}
-		logger, err = s.Logger(nil)
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = s.Run()
-		if err != nil {
-			logger.Error(err)
-		}*/
 	fmt.Println("Muscle Training Runner Start...")
 	t := time.NewTicker(30 * time.Minute)
 	for {
