@@ -10,16 +10,21 @@ import (
 
 const percent int = 5
 const blankMinute = 10
+const logName = "test.log"
 
 type program struct{}
 
 func main() {
+	//logger := CreateLogger(logName)
+
 	fmt.Println("Muscle Training Runner Start...")
+	//logger.write("Muscle Training Runner Start...")
 	t := time.NewTicker(30 * time.Minute)
 	for {
 		select {
 		case <-t.C:
 			if !isLucky() {
+				//logger.write("Unlucky...")
 				fmt.Println("Unlucky...")
 				break
 			}
