@@ -15,26 +15,27 @@ const logName = "test.log"
 type program struct{}
 
 func main() {
-	//logger := CreateLogger(logName)
+	logger := NewLogger(logName)
 
 	fmt.Println("Muscle Training Runner Start...")
-	//logger.write("Muscle Training Runner Start...")
+	logger.WriteStartLog()
 	t := time.NewTicker(30 * time.Minute)
 	for {
 		select {
 		case <-t.C:
 			if !isLucky() {
-				//logger.write("Unlucky...")
-				fmt.Println("Unlucky...")
+				logger.WriteUnluckyLog()
 				break
 			}
 
-			openVideo()
+			url := getRandomURL()
+			openVideo(url)
+			logger.WriteVideoPlayedLog(url)
 		}
 	}
 }
 
-func openVideo() {
+func getRandomURL() string {
 	videoIdList := []string{
 		"HF7H6M4nzNY",
 		"s4jzFWoRRA0",
@@ -49,7 +50,12 @@ func openVideo() {
 
 	templateURL := "https://www.youtube.com/watch?v="
 
-	err := open.Run(templateURL + videoIdList[index])
+	return templateURL + videoIdList[index]
+}
+
+func openVideo(url string) {
+
+	err := open.Run(url)
 	if err != nil {
 		panic(err)
 	}
