@@ -36,3 +36,7 @@ func (l *MTLogger) WriteUnluckyLog() {
 func (l *MTLogger) WriteVideoPlayedLog(url string) {
 	l.logger.Println("Muscle Training Video Played: " + url)
 }
+
+func (l *MTLogger) WriteStopLog() {
+	l.logger.Println("Muscle Trainer Process is Stopped. See you Again!")
+}

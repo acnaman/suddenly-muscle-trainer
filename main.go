@@ -1,10 +1,13 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"log"
 	"math/rand"
 	"time"
 
+	"github.com/kardianos/service"
 	"github.com/skratchdot/open-golang/open"
 )
 
@@ -12,26 +15,104 @@ const percent int = 5
 const blankMinute = 10
 const logName = "test.log"
 
-type program struct{}
+type program struct {
+	exit chan struct{}
+}
 
-func main() {
-	logger := NewLogger(logName)
+var logger service.Logger
+
+var mtlogger *MTLogger
+
+func (p *program) Start(s service.Service) error {
+	// Start should not block. Do the actual work async.
+	if service.Interactive() {
+		//logger.Info("Running in terminal.")
+	} else {
+		logger.Info("Running under service manager.")
+	}
+	p.exit = make(chan struct{})
+
+	mtlogger.WriteStartLog()
+	go p.run()
+	return nil
+}
+
+func (p *program) run() {
+	// Do work here
 
 	fmt.Println("Muscle Training Runner Start...")
-	logger.WriteStartLog()
 	t := time.NewTicker(30 * time.Minute)
 	for {
 		select {
 		case <-t.C:
 			if !isLucky() {
-				logger.WriteUnluckyLog()
+				mtlogger.WriteUnluckyLog()
 				break
 			}
 
 			url := getRandomURL()
 			openVideo(url)
-			logger.WriteVideoPlayedLog(url)
+			mtlogger.WriteVideoPlayedLog(url)
 		}
+	}
+}
+
+func (p *program) Stop(s service.Service) error {
+	// Stop should not block. Return with a few seconds.
+	mtlogger.WriteStopLog()
+	close(p.exit)
+	return nil
+}
+
+func main() {
+	mtlogger = NewLogger("muscletrainer.log")
+	svcFlag := flag.String("service", "", "Control the system service.")
+	flag.Parse()
+
+	options := make(service.KeyValue)
+	options["Restart"] = "on-success"
+	options["SuccessExitStatus"] = "1 2 8 SIGKILL"
+	svcConfig := &service.Config{
+		Name:        "GoServiceExampleLogging",
+		DisplayName: "Go Service Example for Logging",
+		Description: "This is an example Go service that outputs log messages.",
+		Dependencies: []string{
+			"Requires=network.target",
+			"After=network-online.target syslog.target"},
+		Option: options,
+	}
+
+	prg := &program{}
+	s, err := service.New(prg, svcConfig)
+	if err != nil {
+		log.Fatal(err)
+	}
+	errs := make(chan error, 5)
+	logger, err = s.Logger(errs)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	go func() {
+		for {
+			err := <-errs
+			if err != nil {
+				log.Print(err)
+			}
+		}
+	}()
+
+	if len(*svcFlag) != 0 {
+		err := service.Control(s, *svcFlag)
+		if err != nil {
+			log.Printf("Valid actions: %q\n", service.ControlAction)
+			log.Fatal(err)
+		}
+		return
+	}
+	err = s.Run()
+	if err != nil {
+		logger.Error(err)
 	}
 }
 
