@@ -11,11 +11,12 @@ import (
 	"github.com/skratchdot/open-golang/open"
 )
 
-const percent int = 5
-const blankMinute = 10
 const logName = "test.log"
 
 type program struct {
+	intervalTime int
+	parcentage   int
+
 	exit chan struct{}
 }
 
@@ -38,14 +39,12 @@ func (p *program) Start(s service.Service) error {
 }
 
 func (p *program) run() {
-	// Do work here
-
 	fmt.Println("Muscle Training Runner Start...")
-	t := time.NewTicker(30 * time.Minute)
+	t := time.NewTicker(time.Duration(p.intervalTime) * time.Minute)
 	for {
 		select {
 		case <-t.C:
-			if !isLucky() {
+			if !isLucky(p.parcentage) {
 				mtlogger.WriteUnluckyLog()
 				break
 			}
@@ -66,6 +65,14 @@ func (p *program) Stop(s service.Service) error {
 
 func main() {
 	mtlogger = NewLogger("muscletrainer.log")
+
+	var (
+		intervalTime int
+		parcentage   int
+	)
+	flag.IntVar(&intervalTime, "t", 30, "Interval of Events")
+	flag.IntVar(&parcentage, "p", 5, "Parcentage of Video Play")
+
 	svcFlag := flag.String("service", "", "Control the system service.")
 	flag.Parse()
 
@@ -73,16 +80,19 @@ func main() {
 	options["Restart"] = "on-success"
 	options["SuccessExitStatus"] = "1 2 8 SIGKILL"
 	svcConfig := &service.Config{
-		Name:        "GoServiceExampleLogging",
-		DisplayName: "Go Service Example for Logging",
-		Description: "This is an example Go service that outputs log messages.",
+		Name:        "SuddenlyMuscleTrainer",
+		DisplayName: "Suddenly Muscle Trainer",
+		Description: "This service suddenly plays Muscle Training video.",
 		Dependencies: []string{
 			"Requires=network.target",
 			"After=network-online.target syslog.target"},
 		Option: options,
 	}
 
-	prg := &program{}
+	prg := &program{
+		intervalTime: intervalTime,
+		parcentage:   parcentage,
+	}
 	s, err := service.New(prg, svcConfig)
 	if err != nil {
 		log.Fatal(err)
@@ -142,7 +152,7 @@ func openVideo(url string) {
 	}
 }
 
-func isLucky() bool {
+func isLucky(percent int) bool {
 	rand := generateRandomInteger(100 / percent)
 	if rand == 1 {
 		return true
