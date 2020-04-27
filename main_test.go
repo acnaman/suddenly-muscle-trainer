@@ -23,3 +23,11 @@ func TestGenerateRandomInteger(t *testing.T) {
 		}
 	}
 }
+
+func TestIsValidTime(t *testing.T) {
+	actual := isValidTime("00:00", "00:00")
+	expect := true
+	if actual != expect {
+		t.Error("unavailable")
+	}
+}

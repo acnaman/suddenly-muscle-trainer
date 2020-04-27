@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/kardianos/service"
@@ -14,10 +18,23 @@ import (
 const logName = "test.log"
 
 type program struct {
+	Setting
+	exit chan struct{}
+}
+
+type Setting struct {
+	Frequency
+	ValidTime
+}
+
+type Frequency struct {
 	intervalTime int
 	parcentage   int
+}
 
-	exit chan struct{}
+type ValidTime struct {
+	startTime string
+	endTime   string
 }
 
 var logger service.Logger
@@ -44,6 +61,9 @@ func (p *program) run() {
 	for {
 		select {
 		case <-t.C:
+			if !isValidTime(p.startTime, p.endTime) {
+				break
+			}
 			if !isLucky(p.parcentage) {
 				mtlogger.WriteUnluckyLog()
 				break
@@ -90,8 +110,16 @@ func main() {
 	}
 
 	prg := &program{
-		intervalTime: intervalTime,
-		parcentage:   parcentage,
+		Setting: Setting{
+			Frequency: Frequency{
+				intervalTime: intervalTime,
+				parcentage:   parcentage,
+			},
+			ValidTime: ValidTime{
+				startTime: "00:00",
+				endTime:   "00:00",
+			},
+		},
 	}
 	s, err := service.New(prg, svcConfig)
 	if err != nil {
@@ -124,6 +152,14 @@ func main() {
 	if err != nil {
 		logger.Error(err)
 	}
+}
+
+func getExecDir() string {
+	exe, err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return filepath.Dir(exe)
 }
 
 func getRandomURL() string {
@@ -163,4 +199,26 @@ func isLucky(percent int) bool {
 func generateRandomInteger(max int) int {
 	rand.Seed(time.Now().UnixNano())
 	return rand.Intn(max)
+}
+
+func isValidTime(startTime, endTime string) bool {
+	if startTime == endTime {
+		return true
+	}
+	sTime := strings.Split(startTime, ":")
+	eTime := strings.Split(endTime, ":")
+	if len(sTime) != 2 || len(eTime) != 2 {
+		log.Fatal("invalid time format")
+	}
+	now := time.Now()
+	sh, _ := strconv.Atoi(sTime[0])
+	sm, _ := strconv.Atoi(sTime[1])
+	eh, _ := strconv.Atoi(eTime[0])
+	em, _ := strconv.Atoi(eTime[1])
+	// TODO: Error Check
+	start := time.Date(now.Year(), now.Month(), now.Day(), sh, sm, 0, 0, now.Location())
+	end := time.Date(now.Year(), now.Month(), now.Day(), eh, em, 0, 0, now.Location())
+
+	fmt.Println(start.Format("2006/01/02 15:04:05"), end.Format("2006/01/02 15:04:05"), now.Format("2006/01/02 15:04:05"))
+	return now.After(start) && now.Before(end)
 }
