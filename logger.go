@@ -16,7 +16,7 @@ type MTLogger struct {
 // NewLogger Constructor of Logger
 func NewLogger(path string) *MTLogger {
 	l := new(MTLogger)
-	f, err := os.OpenFile(logPath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0755)
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0755)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -31,6 +31,10 @@ func (l *MTLogger) WriteStartLog() {
 
 func (l *MTLogger) WriteUnluckyLog() {
 	l.logger.Println("Unluckey...")
+}
+
+func (l *MTLogger) WriteInvalidTimeLog() {
+	l.logger.Println("Invalid Time. Please take a rest.")
 }
 
 func (l *MTLogger) WriteVideoPlayedLog(url string) {

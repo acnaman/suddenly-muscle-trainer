@@ -1,11 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -15,26 +18,24 @@ import (
 	"github.com/skratchdot/open-golang/open"
 )
 
-const logName = "test.log"
-
 type program struct {
 	Setting
 	exit chan struct{}
 }
 
 type Setting struct {
-	Frequency
-	ValidTime
+	Frequency `json:"frequency"`
+	ValidTime `json:"validTime"`
 }
 
 type Frequency struct {
-	intervalTime int
-	parcentage   int
+	IntervalTime int `json:"intervalTime"`
+	Parcentage   int `json:"parcentage"`
 }
 
 type ValidTime struct {
-	startTime string
-	endTime   string
+	StartTime string `json:"startTime"`
+	EndTime   string `json:"endTime"`
 }
 
 var logger service.Logger
@@ -57,14 +58,15 @@ func (p *program) Start(s service.Service) error {
 
 func (p *program) run() {
 	fmt.Println("Muscle Training Runner Start...")
-	t := time.NewTicker(time.Duration(p.intervalTime) * time.Minute)
+	t := time.NewTicker(time.Duration(p.IntervalTime) * time.Minute)
 	for {
 		select {
 		case <-t.C:
-			if !isValidTime(p.startTime, p.endTime) {
+			if !isValidTime(p.StartTime, p.EndTime) {
+				mtlogger.WriteInvalidTimeLog()
 				break
 			}
-			if !isLucky(p.parcentage) {
+			if !isLucky(p.Parcentage) {
 				mtlogger.WriteUnluckyLog()
 				break
 			}
@@ -84,7 +86,7 @@ func (p *program) Stop(s service.Service) error {
 }
 
 func main() {
-	mtlogger = NewLogger("muscletrainer.log")
+	mtlogger = NewLogger(path.Join(getExecDir(), "muscletrainer.log"))
 
 	var (
 		intervalTime int
@@ -109,17 +111,29 @@ func main() {
 		Option: options,
 	}
 
-	prg := &program{
-		Setting: Setting{
-			Frequency: Frequency{
-				intervalTime: intervalTime,
-				parcentage:   parcentage,
-			},
-			ValidTime: ValidTime{
-				startTime: "00:00",
-				endTime:   "00:00",
-			},
+	setting := Setting{
+		Frequency: Frequency{
+			IntervalTime: intervalTime,
+			Parcentage:   parcentage,
 		},
+		ValidTime: ValidTime{
+			StartTime: "00:00",
+			EndTime:   "00:00",
+		},
+	}
+
+	settingFilePath := path.Join(getExecDir(), "/setting.json"
+	raw, err := ioutil.ReadFile(settingFilePath))
+	if err == nil {
+		log.Printf("Warning: Cannot read setting.json. [%s]\n", settingFilePath)
+	} else {
+		json.Unmarshal(raw, &setting)
+	}
+
+	fmt.Println(setting)
+
+	prg := &program{
+		Setting: setting,
 	}
 	s, err := service.New(prg, svcConfig)
 	if err != nil {
@@ -219,6 +233,6 @@ func isValidTime(startTime, endTime string) bool {
 	start := time.Date(now.Year(), now.Month(), now.Day(), sh, sm, 0, 0, now.Location())
 	end := time.Date(now.Year(), now.Month(), now.Day(), eh, em, 0, 0, now.Location())
 
-	fmt.Println(start.Format("2006/01/02 15:04:05"), end.Format("2006/01/02 15:04:05"), now.Format("2006/01/02 15:04:05"))
+	//fmt.Println(start.Format("2006/01/02 15:04:05"), end.Format("2006/01/02 15:04:05"), now.Format("2006/01/02 15:04:05"))
 	return now.After(start) && now.Before(end)
 }
