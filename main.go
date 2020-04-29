@@ -58,6 +58,14 @@ func (p *program) Start(s service.Service) error {
 
 func (p *program) run() {
 	fmt.Println("Muscle Training Runner Start...")
+	var validTimestr string
+	if p.StartTime == p.EndTime {
+		validTimestr = "All Time"
+	} else {
+		validTimestr = p.StartTime + "〜" + p.EndTime
+	}
+	mtlogger.WriteString(fmt.Sprintf("Setting information: Interval=%dmin, Percentage=%d％, validTiume=%s", p.IntervalTime, p.Parcentage, validTimestr))
+
 	t := time.NewTicker(time.Duration(p.IntervalTime) * time.Minute)
 	for {
 		select {
@@ -122,19 +130,18 @@ func main() {
 		},
 	}
 
-	settingFilePath := path.Join(getExecDir(), "/setting.json"
-	raw, err := ioutil.ReadFile(settingFilePath))
-	if err == nil {
+	settingFilePath := path.Join(getExecDir(), "/setting.json")
+	raw, err := ioutil.ReadFile(settingFilePath)
+	if err != nil {
 		log.Printf("Warning: Cannot read setting.json. [%s]\n", settingFilePath)
 	} else {
 		json.Unmarshal(raw, &setting)
 	}
 
-	fmt.Println(setting)
-
 	prg := &program{
 		Setting: setting,
 	}
+
 	s, err := service.New(prg, svcConfig)
 	if err != nil {
 		log.Fatal(err)

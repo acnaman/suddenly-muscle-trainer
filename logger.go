@@ -24,6 +24,10 @@ func NewLogger(path string) *MTLogger {
 	return l
 }
 
+func (l *MTLogger) WriteString(str string) {
+	l.logger.Println(str)
+}
+
 // WriteStartLog Write Start Log to logfile
 func (l *MTLogger) WriteStartLog() {
 	l.logger.Println("Muscle Trainer Process Start!")
