@@ -19,7 +19,7 @@ import (
 )
 
 type program struct {
-	Setting
+	*Setting
 	exit chan struct{}
 }
 
@@ -51,13 +51,27 @@ func (p *program) Start(s service.Service) error {
 	}
 	p.exit = make(chan struct{})
 
+	// load setting file
 	mtlogger.WriteStartLog()
-	go p.run()
-	return nil
-}
+	setting := &Setting{
+		Frequency: Frequency{
+			IntervalTime: 30,
+			Parcentage:   5,
+		},
+		ValidTime: ValidTime{
+			StartTime: "00:00",
+			EndTime:   "00:00",
+		},
+	}
+	settingFilePath := path.Join(getExecDir(), "/setting.json")
+	raw, err := ioutil.ReadFile(settingFilePath)
+	if err != nil {
+		log.Printf("Warning: Cannot read setting.json. [%s]\n", settingFilePath)
+	} else {
+		json.Unmarshal(raw, setting)
+	}
+	p.Setting = setting
 
-func (p *program) run() {
-	fmt.Println("Muscle Training Runner Start...")
 	var validTimestr string
 	if p.StartTime == p.EndTime {
 		validTimestr = "All Time"
@@ -66,6 +80,12 @@ func (p *program) run() {
 	}
 	mtlogger.WriteString(fmt.Sprintf("Setting information: Interval=%dmin, Percentage=%d％, validTiume=%s", p.IntervalTime, p.Parcentage, validTimestr))
 
+	go p.run()
+	return nil
+}
+
+func (p *program) run() {
+	fmt.Println("Muscle Training Runner Start...")
 	t := time.NewTicker(time.Duration(p.IntervalTime) * time.Minute)
 	for {
 		select {
@@ -96,13 +116,6 @@ func (p *program) Stop(s service.Service) error {
 func main() {
 	mtlogger = NewLogger(path.Join(getExecDir(), "muscletrainer.log"))
 
-	var (
-		intervalTime int
-		parcentage   int
-	)
-	flag.IntVar(&intervalTime, "t", 30, "Interval of Events")
-	flag.IntVar(&parcentage, "p", 5, "Parcentage of Video Play")
-
 	svcFlag := flag.String("service", "", "Control the system service.")
 	flag.Parse()
 
@@ -119,28 +132,7 @@ func main() {
 		Option: options,
 	}
 
-	setting := Setting{
-		Frequency: Frequency{
-			IntervalTime: intervalTime,
-			Parcentage:   parcentage,
-		},
-		ValidTime: ValidTime{
-			StartTime: "00:00",
-			EndTime:   "00:00",
-		},
-	}
-
-	settingFilePath := path.Join(getExecDir(), "/setting.json")
-	raw, err := ioutil.ReadFile(settingFilePath)
-	if err != nil {
-		log.Printf("Warning: Cannot read setting.json. [%s]\n", settingFilePath)
-	} else {
-		json.Unmarshal(raw, &setting)
-	}
-
-	prg := &program{
-		Setting: setting,
-	}
+	prg := &program{}
 
 	s, err := service.New(prg, svcConfig)
 	if err != nil {
