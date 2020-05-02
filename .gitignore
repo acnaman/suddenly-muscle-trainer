@@ -1,3 +1,4 @@
 out/*
 *.log
 sandbox/*
+/fyne-cross
