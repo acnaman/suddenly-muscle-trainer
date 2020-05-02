@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -40,8 +41,26 @@ func ShowSettingDialog() {
 
 	a := app.New()
 	window := a.NewWindow("Setting")
+
+	intervalTime := widget.NewEntry()
+	intervalTime.SetPlaceHolder("30")
+	percentage := widget.NewEntry()
+	percentage.SetPlaceHolder("17:30")
+	startTimeEntry := widget.NewEntry()
+	startTimeEntry.SetPlaceHolder("09:00")
+	endTimeEntry := widget.NewEntry()
+	endTimeEntry.SetPlaceHolder("17:30")
+
 	window.SetContent(widget.NewVBox(
 		widget.NewLabel("Muscle Trainer Setting"),
+		&widget.Form{
+			Items: []*widget.FormItem{
+				{"Interval Time (min)", intervalTime},
+				{"Percentage", percentage},
+				{"Start Time", startTimeEntry},
+				{"End Time", endTimeEntry},
+			},
+		},
 		widget.NewButton("Save", func() {
 			a.Quit()
 		}),
@@ -51,6 +70,14 @@ func ShowSettingDialog() {
 	))
 
 	window.ShowAndRun()
+}
+
+func onSubmit() {
+	fmt.Println("pushed ok")
+}
+
+func onCancel() {
+	fmt.Println("pushed cancel")
 }
 
 func exists(path string) bool {
