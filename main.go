@@ -16,6 +16,8 @@ func main() {
 
 	if len(*svcFlag) != 0 || *runtimeFlag {
 		runtime.Exec(svcFlag)
+	} else {
+		runtime.ShowSettingDialog()
 	}
 
 	fmt.Println("open gui")
