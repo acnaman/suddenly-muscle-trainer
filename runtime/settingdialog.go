@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strconv"
 
 	"fyne.io/fyne/widget"
 
@@ -34,22 +35,24 @@ func ShowSettingDialog() {
 		}
 	}
 
-	/*f, err := os.OpenFile(settingFilePath, os.O_RDWR|os.O_CREATE|O_, 0755)
-	if err != nil {
-		log.Fatal(err)
-	}*/
-
 	a := app.New()
-	window := a.NewWindow("Setting")
+	window := a.NewWindow("Muscle Trainer Setting")
 
 	intervalTime := widget.NewEntry()
 	intervalTime.SetPlaceHolder("30")
+	intervalTime.SetText(strconv.Itoa(setting.IntervalTime))
+
 	percentage := widget.NewEntry()
 	percentage.SetPlaceHolder("17:30")
+	percentage.SetText(strconv.Itoa(setting.Parcentage))
+
 	startTimeEntry := widget.NewEntry()
 	startTimeEntry.SetPlaceHolder("09:00")
+	startTimeEntry.SetText(setting.StartTime)
+
 	endTimeEntry := widget.NewEntry()
 	endTimeEntry.SetPlaceHolder("17:30")
+	endTimeEntry.SetText(setting.EndTime)
 
 	window.SetContent(widget.NewVBox(
 		widget.NewLabel("Muscle Trainer Setting"),
@@ -62,6 +65,12 @@ func ShowSettingDialog() {
 			},
 		},
 		widget.NewButton("Save", func() {
+			setting.IntervalTime, _ = strconv.Atoi(intervalTime.Text)
+			setting.Parcentage, _ = strconv.Atoi(percentage.Text)
+			setting.StartTime = startTimeEntry.Text
+			setting.EndTime = endTimeEntry.Text
+
+			onSubmit(setting)
 			a.Quit()
 		}),
 		widget.NewButton("Cancel", func() {
@@ -72,12 +81,22 @@ func ShowSettingDialog() {
 	window.ShowAndRun()
 }
 
-func onSubmit() {
+func onSubmit(s *Setting) {
 	fmt.Println("pushed ok")
-}
 
-func onCancel() {
-	fmt.Println("pushed cancel")
+	settingFilePath := path.Join(getExecDir(), "/setting.json")
+	f, err := os.OpenFile(settingFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	b, err := json.Marshal(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	f.Write(b)
+
 }
 
 func exists(path string) bool {
