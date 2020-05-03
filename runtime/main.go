@@ -1,9 +1,8 @@
-package runtime
+package main
 
 import (
-	"encoding/json"
+	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
@@ -15,10 +14,12 @@ import (
 
 	"github.com/kardianos/service"
 	"github.com/skratchdot/open-golang/open"
+
+	"./setting"
 )
 
 type program struct {
-	*Setting
+	*setting.Setting
 	exit chan struct{}
 }
 
@@ -26,7 +27,10 @@ var logger service.Logger
 
 var mtlogger *MTLogger
 
-func Exec(svcFlag *string) {
+func main() {
+	svcFlag := flag.String("service", "", "Control the system service.")
+	flag.Parse()
+
 	mtlogger = NewLogger(path.Join(getExecDir(), "muscletrainer.log"))
 
 	options := make(service.KeyValue)
@@ -86,26 +90,10 @@ func (p *program) Start(s service.Service) error {
 	}
 	p.exit = make(chan struct{})
 
-	// load setting file
 	mtlogger.WriteStartLog()
-	setting := &Setting{
-		Frequency: Frequency{
-			IntervalTime: 30,
-			Parcentage:   5,
-		},
-		ValidTime: ValidTime{
-			StartTime: "00:00",
-			EndTime:   "00:00",
-		},
-	}
-	settingFilePath := path.Join(getExecDir(), "/setting.json")
-	raw, err := ioutil.ReadFile(settingFilePath)
-	if err != nil {
-		log.Printf("Warning: Cannot read setting.json. [%s]\n", settingFilePath)
-	} else {
-		json.Unmarshal(raw, setting)
-	}
-	p.Setting = setting
+
+	// load setting file
+	p.Setting = setting.GetCurrentSetting()
 
 	var validTimestr string
 	if p.StartTime == p.EndTime {

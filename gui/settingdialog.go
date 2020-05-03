@@ -1,39 +1,25 @@
-package runtime
+package main
 
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
 	"strconv"
 
-	"fyne.io/fyne/widget"
-
 	"fyne.io/fyne/app"
+	"fyne.io/fyne/widget"
+	"github.com/acnaman/suddenly-muscle-trainer/runtime/setting"
 )
+
+func main() {
+	ShowSettingDialog()
+}
 
 func ShowSettingDialog() {
 	settingFilePath := path.Join(getExecDir(), "/setting.json")
-	setting := &Setting{
-		Frequency: Frequency{
-			IntervalTime: 30,
-			Parcentage:   5,
-		},
-		ValidTime: ValidTime{
-			StartTime: "00:00",
-			EndTime:   "00:00",
-		},
-	}
-	if exists(settingFilePath) {
-		raw, err := ioutil.ReadFile(settingFilePath)
-		if err != nil {
-			log.Printf("Warning: Cannot read setting.json. [%s]\n", settingFilePath)
-		} else {
-			json.Unmarshal(raw, setting)
-		}
-	}
+	setting := setting.GetCurrentSetting()
 
 	a := app.New()
 	window := a.NewWindow("Muscle Trainer Setting")
@@ -81,7 +67,7 @@ func ShowSettingDialog() {
 	window.ShowAndRun()
 }
 
-func onSubmit(s *Setting) {
+func onSubmit(s *setting.Setting) {
 	fmt.Println("pushed ok")
 
 	settingFilePath := path.Join(getExecDir(), "/setting.json")
