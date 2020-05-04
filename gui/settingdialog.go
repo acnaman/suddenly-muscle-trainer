@@ -1,8 +1,12 @@
 package main
 
 import (
+	"errors"
 	"os"
+	"regexp"
 	"strconv"
+
+	"fyne.io/fyne"
 
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/widget"
@@ -46,20 +50,106 @@ func ShowSettingDialog() {
 			},
 		},
 		widget.NewButton("Save", func() {
-			setting.IntervalTime, _ = strconv.Atoi(intervalTime.Text)
-			setting.Parcentage, _ = strconv.Atoi(percentage.Text)
-			setting.StartTime = startTimeEntry.Text
-			setting.EndTime = endTimeEntry.Text
-
+			var err error
+			setting.IntervalTime, err = checkIntervalTime(intervalTime.Text)
+			if err != nil {
+				showErrorMessage(a, err)
+				return
+			}
+			setting.Parcentage, err = checkPercentage(percentage.Text)
+			if err != nil {
+				showErrorMessage(a, err)
+				return
+			}
+			setting.StartTime, err = checkTimeFormat(startTimeEntry.Text)
+			if err != nil {
+				showErrorMessage(a, err)
+				return
+			}
+			setting.EndTime, err = checkTimeFormat(endTimeEntry.Text)
+			if err != nil {
+				showErrorMessage(a, err)
+				return
+			}
 			onSubmit(setting)
-			a.Quit()
 		}),
-		widget.NewButton("Cancel", func() {
+		widget.NewButton("Quit", func() {
 			a.Quit()
 		}),
 	))
 
 	window.ShowAndRun()
+}
+
+func checkIntervalTime(text string) (int, error) {
+	i, err := strconv.Atoi(text)
+	const maxminute = 1440 // 60min * 24hour
+
+	if err != nil {
+		return 0, errors.New("Interval Time shoud be an integer from 0 to 1440")
+	}
+	if i < 0 || maxminute < i {
+		return 0, errors.New("Parcentage Time shoud be an integer from 0 to 1440")
+	}
+
+	return i, nil
+}
+
+func checkPercentage(text string) (int, error) {
+	i, err := strconv.Atoi(text)
+
+	if err != nil {
+		return 0, errors.New("Parcentage shoud be an integer from 0 to 100")
+	}
+	if i < 0 || 100 < i {
+		return 0, errors.New("Parcentage Time shoud be an integer from 0 to 100")
+	}
+
+	return i, nil
+}
+
+var re = regexp.MustCompile(`^(\d\d):(\d\d)$`)
+
+func checkTimeFormat(text string) (string, error) {
+	b := re.MatchString(text)
+	errMsg := "Time should be in the format 'hh:mm' (from 00:00 to 23:59)"
+	if !b {
+		return "", errors.New(errMsg)
+	}
+
+	s := re.FindAllStringSubmatch(text, -1)
+	hour := s[0][1]
+	ihour, err := strconv.Atoi(hour)
+	if err != nil {
+		return "", errors.New(errMsg)
+	}
+	if ihour < 0 || 23 < ihour {
+		return "", errors.New(errMsg)
+	}
+	min := s[0][2]
+	imin, err := strconv.Atoi(min)
+	if err != nil {
+		return "", errors.New(errMsg)
+	}
+	if imin < 0 || 59 < imin {
+		return "", errors.New(errMsg)
+	}
+
+	return text, nil
+}
+
+func showErrorMessage(a fyne.App, err error) {
+	w := a.NewWindow("Error!")
+	w.SetContent(widget.NewVBox(
+		widget.NewLabel(err.Error()),
+		widget.NewButton("OK", func() {
+			w.Hide()
+		}),
+	))
+	w.RequestFocus()
+
+	w.Show()
+
 }
 
 func onSubmit(s *setting.Setting) {
