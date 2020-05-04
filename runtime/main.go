@@ -15,7 +15,7 @@ import (
 	"github.com/kardianos/service"
 	"github.com/skratchdot/open-golang/open"
 
-	"./setting"
+	"github.com/acnaman/suddenly-muscle-trainer/runtime/setting"
 )
 
 type program struct {

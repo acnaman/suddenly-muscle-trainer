@@ -58,3 +58,18 @@ func getExecDir() string {
 	}
 	return filepath.Dir(exe)
 }
+
+func SaveToFile(s *Setting) {
+	settingFilePath := path.Join(getExecDir(), "/setting.json")
+	f, err := os.OpenFile(settingFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	b, err := json.Marshal(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	f.Write(b)
+}
