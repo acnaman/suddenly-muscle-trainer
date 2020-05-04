@@ -78,5 +78,5 @@ func SaveToFile(s *Setting) {
 	out := new(bytes.Buffer)
 	json.Indent(out, b, "", "    ")
 
-	f.Write(b)
+	f.Write([]byte(out.String()))
 }

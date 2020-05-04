@@ -71,7 +71,7 @@ func ShowSettingDialog() {
 				showErrorMessage(a, err)
 				return
 			}
-			onSubmit(setting)
+			onSubmit(a, setting)
 		}),
 		widget.NewButton("Quit", func() {
 			a.Quit()
@@ -146,14 +146,21 @@ func showErrorMessage(a fyne.App, err error) {
 			w.Hide()
 		}),
 	))
-	w.RequestFocus()
-
 	w.Show()
 
 }
 
-func onSubmit(s *setting.Setting) {
+func onSubmit(a fyne.App, s *setting.Setting) {
 	setting.SaveToFile(s)
+
+	w := a.NewWindow("Saved")
+	w.SetContent(widget.NewVBox(
+		widget.NewLabel("Settings Saved to setting.json"),
+		widget.NewButton("OK", func() {
+			w.Hide()
+		}),
+	))
+	w.Show()
 }
 
 func exists(path string) bool {
