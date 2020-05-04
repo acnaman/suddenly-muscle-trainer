@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestGenerateRandomInteger(t *testing.T) {
 	var list [10]int
@@ -29,5 +31,22 @@ func TestIsValidTime(t *testing.T) {
 	expect := true
 	if actual != expect {
 		t.Error("unavailable")
+	}
+}
+
+func TestGetRondomURL(t *testing.T) {
+	actual := getRandomURL(nil)
+	if actual == "" {
+		t.Error("getRondomURL returned \"\"")
+	}
+
+	actual2 := getRandomURL([]string{})
+	if actual2 == "" {
+		t.Error("getRondomURL returned \"\"")
+	}
+
+	actual3 := getRandomURL([]string{"http://test.com"})
+	if actual3 != "http://test.com" {
+		t.Error("getRondomURL returned not listed item")
 	}
 }
