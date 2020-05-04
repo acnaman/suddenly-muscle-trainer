@@ -1,6 +1,7 @@
 package setting
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -12,6 +13,7 @@ import (
 type Setting struct {
 	Frequency `json:"frequency"`
 	ValidTime `json:"validTime"`
+	VideoList `json:"videoList"`
 }
 
 type Frequency struct {
@@ -23,6 +25,8 @@ type ValidTime struct {
 	StartTime string `json:"startTime"`
 	EndTime   string `json:"endTime"`
 }
+
+type VideoList []string
 
 // NewSetting Create Setting struct
 func NewSetting() *Setting {
@@ -70,6 +74,9 @@ func SaveToFile(s *Setting) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	out := new(bytes.Buffer)
+	json.Indent(out, b, "", "    ")
 
 	f.Write(b)
 }
