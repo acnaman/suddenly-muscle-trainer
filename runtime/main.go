@@ -122,7 +122,7 @@ func (p *program) run() {
 				break
 			}
 
-			url := getRandomURL()
+			url := getRandomURL(p.VideoList)
 			openVideo(url)
 			mtlogger.WriteVideoPlayedLog(url)
 		}
@@ -144,22 +144,28 @@ func getExecDir() string {
 	return filepath.Dir(exe)
 }
 
-func getRandomURL() string {
-	videoIdList := []string{
-		"HF7H6M4nzNY",
-		"s4jzFWoRRA0",
-		"jK_8IgcgBHo",
-		"vJ_NBi0YuPM",
-		"yqQM3qPoQsk",
-		"MHwzwXPzIzI",
-		"MByVZoPO6Ds",
+func getRandomURL(videoList setting.VideoList) string {
+	var index int
+
+	if videoList == nil || len(videoList) == 0 {
+		videoIdList := []string{
+			"https://www.youtube.com/watch?v=HF7H6M4nzNY",
+			"https://www.youtube.com/watch?v=s4jzFWoRRA0",
+			"https://www.youtube.com/watch?v=jK_8IgcgBHo",
+			"https://www.youtube.com/watch?v=vJ_NBi0YuPM",
+			"https://www.youtube.com/watch?v=yqQM3qPoQsk",
+			"https://www.youtube.com/watch?v=MHwzwXPzIzI",
+			"https://www.youtube.com/watch?v=MByVZoPO6Ds",
+		}
+		index = generateRandomInteger(len(videoIdList))
+
+		return videoIdList[index]
 	}
 
-	index := generateRandomInteger(len(videoIdList))
+	index = generateRandomInteger(len(videoList))
 
-	templateURL := "https://www.youtube.com/watch?v="
+	return videoList[index]
 
-	return templateURL + videoIdList[index]
 }
 
 func openVideo(url string) {
