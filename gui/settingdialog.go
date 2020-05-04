@@ -1,11 +1,7 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
 	"os"
-	"path"
 	"strconv"
 
 	"fyne.io/fyne/app"
@@ -18,7 +14,6 @@ func main() {
 }
 
 func ShowSettingDialog() {
-	settingFilePath := path.Join(getExecDir(), "/setting.json")
 	setting := setting.GetCurrentSetting()
 
 	a := app.New()
@@ -68,21 +63,7 @@ func ShowSettingDialog() {
 }
 
 func onSubmit(s *setting.Setting) {
-	fmt.Println("pushed ok")
-
-	settingFilePath := path.Join(getExecDir(), "/setting.json")
-	f, err := os.OpenFile(settingFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	b, err := json.Marshal(s)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	f.Write(b)
-
+	setting.SaveToFile(s)
 }
 
 func exists(path string) bool {

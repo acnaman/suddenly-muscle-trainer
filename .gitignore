@@ -2,3 +2,4 @@ out/*
 *.log
 sandbox/*
 /fyne-cross
+bak/
