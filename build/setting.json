@@ -1,0 +1,19 @@
+{
+    "frequency": {
+        "intervalTime": 30,
+        "parcentage": 5
+    },
+    "validTime": {
+        "startTime": "09:00",
+        "endTime": "17:30"
+    },
+    "videoList": [
+        "https://www.youtube.com/watch?v=HF7H6M4nzNY",
+		"https://www.youtube.com/watch?v=s4jzFWoRRA0",
+		"https://www.youtube.com/watch?v=jK_8IgcgBHo",
+		"https://www.youtube.com/watch?v=vJ_NBi0YuPM",
+		"https://www.youtube.com/watch?v=yqQM3qPoQsk",
+		"https://www.youtube.com/watch?v=MHwzwXPzIzI",
+		"https://www.youtube.com/watch?v=MByVZoPO6Ds"
+    ]
+}
