@@ -36,8 +36,12 @@ SETTINGFILE=./build/setting.json
 
 .PHONY: build
 
-all: pre build zip
+all: build zip
 pre:
+	$(GOGET) -u github.com/acnaman/suddenly-muscle-trainer/runtime/setting
+	$(GOGET) -u github.com/kardianos/service
+	$(GOGET) -u github.com/skratchdot/open-golang/open
+	$(GOGET) -u fyne.io/fyne
 	mkdir -p $(OUT_MAC)
 	mkdir -p $(OUT_WIN)
 	mkdir -p $(OUT_ZIPPER)
@@ -60,5 +64,8 @@ clean:
 	rm -f $(BINARY_PATH_SETTING)
 	rm -f $(BINARY_PATH_SETTING_WIN)
 run:
-	$(GOBUILD) -o $(BINARY_NAME) -v ./...
-	./$(BINARY_NAME)
+	$(GOBUILD) -o $(BINARY_PATH_RUNTIME) -v $(RUNTIMEDIR)
+	./$(BINARY_PATH_RUNTIME)
+rungui:
+	$(GOBUILD) -o $(BINARY_PATH_SETTING) -v $(GUIDIR)
+	./$(BINARY_PATH_RUNTIME)
