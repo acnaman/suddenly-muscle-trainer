@@ -7,8 +7,9 @@ GOGET=$(GOCMD) get
 OUTDIR=./out
 OUT_MAC=$(OUTDIR)/mac_64
 OUT_WIN=$(OUTDIR)/win_64
+OUT_ZIPPER=$(OUTDIR)/zipper
 
-BINARY_PATH_ZIPPER=$(OUTDIR)/zipper/zipper
+BINARY_PATH_ZIPPER=$(OUT_ZIPPER)/zipper
 
 BINARY_NAME_RUNTIME=SuddenlyMuscleTrainer
 BINARY_PATH_RUNTIME=$(OUT_MAC)/$(BINARY_NAME_RUNTIME)
@@ -35,7 +36,12 @@ SETTINGFILE=./build/setting.json
 
 .PHONY: build
 
-all: build zip
+all: pre build zip
+pre:
+	mkdir -p $(OUT_MAC)
+	mkdir -p $(OUT_WIN)
+	mkdir -p $(OUT_ZIPPER)
+	mkdir -p $(PRODDIR)
 build:
 	$(GOBUILD) -o $(BINARY_PATH_ZIPPER) $(ZIPPERDIR)
 	$(GOBUILD) -o $(BINARY_PATH_RUNTIME) -v $(RUNTIMEDIR)
