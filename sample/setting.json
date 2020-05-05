@@ -1,7 +1,7 @@
 {
     "frequency": {
         "intervalTime": 5,
-        "parcentage": 1
+        "percentage": 1
     },
     "validtime": {
         "startTime": "09:00",

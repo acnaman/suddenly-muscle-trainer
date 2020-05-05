@@ -91,7 +91,7 @@ func main() {
 func (p *program) Start(s service.Service) error {
 	// Start should not block. Do the actual work async.
 	if service.Interactive() {
-		//logger.Info("Running in terminal.")
+		logger.Info("Running in terminal.")
 	} else {
 		logger.Info("Running under service manager.")
 	}
@@ -108,7 +108,7 @@ func (p *program) Start(s service.Service) error {
 	} else {
 		validTimestr = p.StartTime + "〜" + p.EndTime
 	}
-	mtlogger.WriteString(fmt.Sprintf("Setting information: Interval=%dmin, Percentage=%d％, validTiume=%s", p.IntervalTime, p.Parcentage, validTimestr))
+	mtlogger.WriteString(fmt.Sprintf("Setting information: Interval=%dmin, Percentage=%d％, validTime=%s", p.IntervalTime, p.Percentage, validTimestr))
 
 	go p.run()
 	return nil
@@ -124,7 +124,7 @@ func (p *program) run() {
 				mtlogger.WriteInvalidTimeLog()
 				break
 			}
-			if !isLucky(p.Parcentage) {
+			if !isLucky(p.Percentage) {
 				mtlogger.WriteUnluckyLog()
 				break
 			}
@@ -214,6 +214,5 @@ func isValidTime(startTime, endTime string) bool {
 	start := time.Date(now.Year(), now.Month(), now.Day(), sh, sm, 0, 0, now.Location())
 	end := time.Date(now.Year(), now.Month(), now.Day(), eh, em, 0, 0, now.Location())
 
-	//fmt.Println(start.Format("2006/01/02 15:04:05"), end.Format("2006/01/02 15:04:05"), now.Format("2006/01/02 15:04:05"))
 	return now.After(start) && now.Before(end)
 }

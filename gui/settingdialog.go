@@ -29,7 +29,7 @@ func ShowSettingDialog() {
 
 	percentage := widget.NewEntry()
 	percentage.SetPlaceHolder("17:30")
-	percentage.SetText(strconv.Itoa(setting.Parcentage))
+	percentage.SetText(strconv.Itoa(setting.Percentage))
 
 	startTimeEntry := widget.NewEntry()
 	startTimeEntry.SetPlaceHolder("09:00")
@@ -56,7 +56,7 @@ func ShowSettingDialog() {
 				showErrorMessage(a, err)
 				return
 			}
-			setting.Parcentage, err = checkPercentage(percentage.Text)
+			setting.Percentage, err = checkPercentage(percentage.Text)
 			if err != nil {
 				showErrorMessage(a, err)
 				return
@@ -89,7 +89,7 @@ func checkIntervalTime(text string) (int, error) {
 		return 0, errors.New("Interval Time shoud be an integer from 0 to 1440")
 	}
 	if i < 0 || maxminute < i {
-		return 0, errors.New("Parcentage Time shoud be an integer from 0 to 1440")
+		return 0, errors.New("Percentage Time shoud be an integer from 0 to 1440")
 	}
 
 	return i, nil
@@ -99,10 +99,10 @@ func checkPercentage(text string) (int, error) {
 	i, err := strconv.Atoi(text)
 
 	if err != nil {
-		return 0, errors.New("Parcentage shoud be an integer from 0 to 100")
+		return 0, errors.New("Percentage shoud be an integer from 0 to 100")
 	}
 	if i < 0 || 100 < i {
-		return 0, errors.New("Parcentage Time shoud be an integer from 0 to 100")
+		return 0, errors.New("Percentage Time shoud be an integer from 0 to 100")
 	}
 
 	return i, nil

@@ -18,7 +18,7 @@ type Setting struct {
 
 type Frequency struct {
 	IntervalTime int `json:"intervalTime"`
-	Parcentage   int `json:"parcentage"`
+	Percentage   int `json:"percentage"`
 }
 
 type ValidTime struct {
@@ -33,7 +33,7 @@ func NewSetting() *Setting {
 	return &Setting{
 		Frequency: Frequency{
 			IntervalTime: 30,
-			Parcentage:   5,
+			Percentage:   5,
 		},
 		ValidTime: ValidTime{
 			StartTime: "00:00",
