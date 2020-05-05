@@ -178,7 +178,7 @@ func openVideo(url string) {
 
 func isLucky(percent int) bool {
 	rand := generateRandomInteger(100)
-	if rand <= percent {
+	if rand < percent {
 		return true
 	}
 	return false

@@ -50,3 +50,27 @@ func TestGetRondomURL(t *testing.T) {
 		t.Error("getRondomURL returned not listed item")
 	}
 }
+
+func TestIsLucky(t *testing.T) {
+	testfunc := func(parcent int) {
+		var luckyNum float64 = 0
+		for i := 0; i < 100000; i++ {
+			if isLucky(parcent) {
+				luckyNum++
+			}
+		}
+		expect := float64(parcent)
+		actual := luckyNum / 1000.0
+
+		if actual < expect-1 || expect+1 < actual {
+			t.Errorf("expect:%v％, actual:%v％\n", parcent, actual)
+		}
+	}
+
+	testfunc(5)
+	testfunc(0)
+	testfunc(1)
+	testfunc(100)
+	testfunc(30)
+
+}
