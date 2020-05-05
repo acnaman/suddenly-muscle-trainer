@@ -27,9 +27,16 @@ var logger service.Logger
 
 var mtlogger *MTLogger
 
+const VERSION = "0.1"
+
 func main() {
 	svcFlag := flag.String("service", "", "Control the system service.")
+	versionFlag := flag.Bool("version", false, "Show product version")
 	flag.Parse()
+
+	if *versionFlag {
+		fmt.Println("Suddenly Muscle Treiner version " + VERSION)
+	}
 
 	mtlogger = NewLogger(path.Join(getExecDir(), "muscletrainer.log"))
 
