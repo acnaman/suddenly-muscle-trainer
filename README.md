@@ -1,12 +1,12 @@
 # Suddenly Muscle Trainer
 
-This program suddenly plays Muscle Traiing Video on your browser. The content of the video is ["Muscles for All!"](https://www.youtube.com/watch?v=HF7H6M4nzNY) on NHK WORLD-JAPAN uploaded to Youtube. The video is The video will be play at random timing. Let's do muscle training when the video is played! Eliminate lack of exercise.
+This program suddenly plays Muscle Traiing Video on your browser. The content of the video is ["Muscles for All!"](https://www.youtube.com/watch?v=HF7H6M4nzNY) on NHK WORLD-JAPAN uploaded to Youtube. The video is The video will be played at random timing. Let's do muscle training when the video is played! Eliminate lack of exercise!
 
 ## Quick starts
 1. Download the zipfile from [releases](https://github.com/acnaman/suddenly-muscle-trainer/releases/)
 2. Unzip the zipfile
 3. Execute "SuddenlyMuscleTrainer" or "SuddenlyMuscleTrainer.exe"
-4. After that, the program will start and youtube will play at random timing.
+4. After that, the program will start and youtube will be played at random timing.
 
 ## Adjust Setting
 Open "SettingTool" or "SettingTool.exe".
@@ -14,16 +14,16 @@ You can adjust following items.
 
 | Item | meaning | Default |
 ----|----|----
-| Interval Time(min) | video chance | 30 |
-| Percentage | The probability that the video will be played | 5 |
-| Start Time |  | 09:00 |
-| End Time |  | 17:30 |
+| Interval Time(min) | You can get chance that the video will be played every "Interval Time" minutes | 30 |
+| Percentage | The probability that the video will be played in one chance | 5 |
+| Start Time | The video will not be played before "Start Time" | 09:00 |
+| End Time | The video will not be played after "End Time" | 17:30 |
 
-If `Start Time` and `End Time` have the same value, the chance
+If `Start Time` and `End Time` have the same value, you can get the chance all day.
 
 ### Example
 
-If you set the item values below, every 5 minutes there is a 1％ chance that the vide will play between 10:00 and 19:00. 
+If you set the item values below, every 5 minutes there is a 1％ chance that the video will be played between 10:00 and 19:00. 
 
 | Item | Value |
 ----|----
