@@ -40,17 +40,10 @@ func main() {
 
 	mtlogger = NewLogger(path.Join(getExecDir(), "muscletrainer.log"))
 
-	options := make(service.KeyValue)
-	options["Restart"] = "on-success"
-	options["SuccessExitStatus"] = "1 2 8 SIGKILL"
 	svcConfig := &service.Config{
 		Name:        "SuddenlyMuscleTrainer",
 		DisplayName: "Suddenly Muscle Trainer",
 		Description: "This service suddenly plays Muscle Training video.",
-		Dependencies: []string{
-			"Requires=network.target",
-			"After=network-online.target syslog.target"},
-		Option: options,
 	}
 
 	prg := &program{}
